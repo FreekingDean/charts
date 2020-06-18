@@ -1,0 +1,22 @@
+apiVersion: v1
+entries:
+  kube-plex:
+  - apiVersion: v1
+    appVersion: 1.16.0.1226-7eb2c8f6f
+    created: "2020-06-18T21:07:39.435278995Z"
+    description: Plex Media Server
+    digest: 3ef3a54317d044fa8bcc24ee1eb002d221c790528f23f3b5008bf38693bdec4f
+    home: https://plex.tv/
+    icon: https://www.plex.tv/wp-content/uploads/2018/01/pmp-icon-1.png
+    keywords:
+    - plex
+    maintainers:
+    - name: munnerz
+    name: kube-plex
+    sources:
+    - https://github.com/munnerz/kube-plex
+    - https://hub.docker.com/r/plexinc/pms-docker/
+    urls:
+    - https://github.com/FreekingDean/charts/releases/download/kube-plex-0.2.7/kube-plex-0.2.7.tgz
+    version: 0.2.7
+generated: "2020-06-18T21:07:39.271335064Z"
