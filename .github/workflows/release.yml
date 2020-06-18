@@ -19,15 +19,9 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: list files
-        run: ls -laR
-
-      - name: rm keep file
+      - name: mkdir charts
         run: |
-          rm charts/.keep
-
-      - name: list files
-        run: ls -laR
+          mkdir charts
 
       - name: Copy kube-plex
         run: |
