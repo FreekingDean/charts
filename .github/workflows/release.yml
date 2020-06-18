@@ -8,8 +8,6 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -21,9 +19,15 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
+      - name: list files
+        run: ls -laR
+
       - name: rm keep file
         run: |
           rm charts/.keep
+
+      - name: list files
+        run: ls -laR
 
       - name: Copy kube-plex
         run: |
