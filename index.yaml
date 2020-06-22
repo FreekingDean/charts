@@ -22,6 +22,18 @@ entries:
   unicorn-plex:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2020-06-22T17:18:06.312566297Z"
+    description: A Helm chart for deploying UnicornTranscoder on Kubernetes with the
+      ability to automatically scale the transcoders as CPU load increases.
+    digest: 14a633cd59ee7a0ef644124d340e033ca7ba2161f25bda1c5a562527378df3da
+    home: https://github.com/Unicorn-K8s/UnicornTrancoder-chart
+    name: unicorn-plex
+    type: application
+    urls:
+    - https://github.com/FreekingDean/charts/releases/download/unicorn-plex-0.2.3/unicorn-plex-0.2.3.tgz
+    version: 0.2.3
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2020-06-22T17:13:10.73897316Z"
     description: A Helm chart for deploying UnicornTranscoder on Kubernetes with the
       ability to automatically scale the transcoders as CPU load increases.
