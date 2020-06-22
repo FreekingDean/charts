@@ -19,25 +19,6 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: mkdir charts
-        run: |
-          mkdir charts
-
-      - name: Copy kube-plex
-        run: |
-          cp -r submodules/kube-plex/charts/kube-plex charts/kube-plex
-
-      - name: Copy UnicornTranscoder
-        run: |
-          cp -r submodules/UnicornTranscoder-chart charts/UnicornTranscoder
-
-      - name: Remove git dir in UnicornTranscoder
-        run: |
-          rm -rf charts/UnicornTranscoder/.git
-
-      - name: Print Charts
-        run: ls charts
-
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.0.0-rc.1
         env:
