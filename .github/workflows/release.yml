@@ -31,6 +31,9 @@ jobs:
         run: |
           cp -r submodules/UnicornTranscoder-chart charts/UnicornTranscoder
 
+      - name: Print Charts
+        run: ls charts
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.0.0-rc.1
         env:
