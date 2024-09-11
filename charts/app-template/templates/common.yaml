@@ -50,6 +50,7 @@ service:
       {{ $name }}:
         port: {{ $port }}
     {{- end }}
+
 serviceMonitor:
   app-test:
     serviceName: {{ .Release.Name }}
@@ -59,6 +60,12 @@ serviceMonitor:
         path: {{ .Values.newTemplate.serviceMonitor.path }}
         interval: 1m
         scrapeTimeout: 10s
+        {{- if .Values.newTemplate.serviceMonitor.bearerTokenSecret }}
+        bearerTokenSecret:
+          name: {{ .Values.newTemplate.serviceMonitor.bearerTokenSecret.name }}
+          key: {{ .Values.newTemplate.serviceMonitor.bearerTokenSecret.key}}
+        {{- end }}
+
 persistence:
   {{- range $name, $config := .Values.newTemplate.persistence }}
   {{ $name }}:
@@ -71,6 +78,10 @@ ingress:
   {{ .Release.Name }}:
     enabled: true
     className: "traefik"
+    {{- if .Values.ingress.icon }}
+    annotations:
+      hajimari.io/icon: {{ .Values.ingress.icon }}
+    {{- end }}
     hosts:
       - host: {{ .Values.newTemplate.ingress.subdomain }}.deangalvin.dev
         paths:
@@ -81,7 +92,7 @@ ingress:
     tls:
       - secretName: "deangalvin-dev-production-tls"
         hosts:
-        - {{ .Values.newTemplate.ingress.subdomain }}
+        - {{ .Values.newTemplate.ingress.subdomain }}.deangalvin.dev
 {{- end }}
 {{- end -}}
 
