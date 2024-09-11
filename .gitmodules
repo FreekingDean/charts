@@ -1,6 +1,0 @@
-[submodule "submodules/kube-plex"]
-	path = submodules/kube-plex
-	url = https://github.com/munnerz/kube-plex.git
-[submodule "submodules/UnicornTranscoder-chart"]
-	path = submodules/UnicornTranscoder-chart
-	url = https://github.com/FreekingDean/UnicornTranscoder-chart.git
