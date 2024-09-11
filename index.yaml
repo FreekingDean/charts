@@ -2,6 +2,22 @@ apiVersion: v1
 entries:
   app-template:
   - apiVersion: v2
+    created: "2024-09-11T22:39:44.526161297Z"
+    dependencies:
+    - name: common
+      repository: https://bjw-s.github.io/helm-charts
+      version: 3.4.0
+    description: A FreekingDean templated Chart based on the bjw-s/app-template chart
+    digest: 3bed07e9539b088a41d535b8ee79b25f4de1f2bf633ab41e83243d235715d07b
+    kubeVersion: '>=1.22.0-0'
+    maintainers:
+    - email: deangalvin3@gmail.com
+      name: FreekingDean
+    name: app-template
+    urls:
+    - https://github.com/FreekingDean/charts/releases/download/app-template-0.0.2/app-template-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
     created: "2024-09-11T22:21:17.078182925Z"
     dependencies:
     - name: common
@@ -397,4 +413,4 @@ entries:
     urls:
     - https://github.com/FreekingDean/charts/releases/download/unicorn-plex-0.2.0/unicorn-plex-0.2.0.tgz
     version: 0.2.0
-generated: "2024-09-11T22:21:17.078259268Z"
+generated: "2024-09-11T22:39:44.526236447Z"
