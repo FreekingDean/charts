@@ -1,6 +1,5 @@
 replicas: 2
 
-
 stateful: false
 
 image:
@@ -8,6 +7,10 @@ image:
   tag: latest
 
 command: []
+
+loadbalanced: false
+
+istio: true
 
 ports:
   http: 8080
