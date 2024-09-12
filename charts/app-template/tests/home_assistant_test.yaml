@@ -1,5 +1,5 @@
 tests:
-  - it: manifest should match snapshot
+  - it: validates my home-assistant setup
     set:
       image:
         repository: ghcr.io/onedr0p/home-assistant

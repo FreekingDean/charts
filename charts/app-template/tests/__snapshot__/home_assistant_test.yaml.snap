@@ -1,4 +1,4 @@
-manifest should match snapshot:
+validates my home-assistant setup:
   1: |
     apiVersion: apps/v1
     kind: Deployment
@@ -29,13 +29,13 @@ manifest should match snapshot:
         spec:
           automountServiceAccountToken: true
           containers:
-            - image: busybox:latest
+            - image: ghcr.io/onedr0p/home-assistant:2024.9.1
               livenessProbe:
                 failureThreshold: 3
                 initialDelaySeconds: 0
                 periodSeconds: 10
                 tcpSocket:
-                  port: 8080
+                  port: 8123
                 timeoutSeconds: 1
               name: RELEASE-NAME
               readinessProbe:
@@ -43,21 +43,40 @@ manifest should match snapshot:
                 initialDelaySeconds: 0
                 periodSeconds: 10
                 tcpSocket:
-                  port: 8080
+                  port: 8123
                 timeoutSeconds: 1
               startupProbe:
                 failureThreshold: 30
                 initialDelaySeconds: 0
                 periodSeconds: 5
                 tcpSocket:
-                  port: 8080
+                  port: 8123
                 timeoutSeconds: 1
+              volumeMounts:
+                - mountPath: /config
+                  name: config
+                - mountPath: /config/logs
+                  name: logs
+                - mountPath: /tmp
+                  name: tmp
+                - mountPath: /config/tts
+                  name: tts
           dnsPolicy: ClusterFirst
           enableServiceLinks: false
           hostIPC: false
           hostNetwork: false
           hostPID: false
           serviceAccountName: default
+          volumes:
+            - name: config
+              persistentVolumeClaim:
+                claimName: home-assistant-0
+            - emptyDir: {}
+              name: logs
+            - emptyDir: {}
+              name: tmp
+            - emptyDir: {}
+              name: tts
   2: |
     apiVersion: v1
     kind: Service
@@ -72,9 +91,9 @@ manifest should match snapshot:
     spec:
       ports:
         - name: http
-          port: 8080
+          port: 8123
           protocol: TCP
-          targetPort: 8080
+          targetPort: 8123
       selector:
         app.kubernetes.io/component: RELEASE-NAME
         app.kubernetes.io/instance: RELEASE-NAME
@@ -93,19 +112,19 @@ manifest should match snapshot:
     spec:
       ingressClassName: traefik
       rules:
-        - host: .deangalvin.dev
+        - host: hass.deangalvin.dev
           http:
             paths:
               - backend:
                   service:
                     name: RELEASE-NAME
                     port:
-                      number: null
+                      number: 8123
                 path: /
                 pathType: Prefix
       tls:
         - hosts:
-            - .deangalvin.dev
+            - hass.deangalvin.dev
           secretName: deangalvin-dev-production-tls
   4: |
     apiVersion: monitoring.coreos.com/v1
@@ -119,10 +138,13 @@ manifest should match snapshot:
       name: RELEASE-NAME
     spec:
       endpoints:
-        - interval: 1m
-          path: /metrics
+        - bearerTokenSecret:
+            key: token
+            name: hass-secret
+          interval: 1m
+          path: /api/prometheus
           port: http
-          scheme: http
+          scheme: https
           scrapeTimeout: 10s
       jobLabel: RELEASE-NAME
       namespaceSelector:

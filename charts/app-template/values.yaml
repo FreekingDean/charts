@@ -16,6 +16,7 @@ ingress:
 serviceMonitor:
   port: http
   path: /metrics
+  scheme: http
 
 persistence: {}
   #  config:
