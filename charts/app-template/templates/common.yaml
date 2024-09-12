@@ -107,6 +107,9 @@ ingress:
     {{- if .Values.newTemplate.ingress.icon }}
     annotations:
       hajimari.io/icon: {{ .Values.newTemplate.ingress.icon }}
+      {{- if .Values.newTemplate.ingress.localonly }}
+      traefik.ingress.kubernetes.io/router.middlewares: "networking-localonly@kubernetescrd"
+      {{- end }}
     {{- end }}
     hosts:
       - host: {{ .Values.newTemplate.ingress.subdomain }}.deangalvin.dev

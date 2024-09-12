@@ -14,6 +14,7 @@ tests:
       ports:
         http: 8123
       ingress:
+        localonly: false
         subdomain: hass
         icon: mdi:home-assistant
       persistence:
