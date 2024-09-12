@@ -7,12 +7,9 @@ tests:
         tag: v2.2.0-rc1
       command: ["/app/glauth", "-c", "/config"]
       ports:
-        - name: http
-          port: 5555
-        - name: ldap
-          port: 389
+        http: 5555
+        ldap: 389
       serviceMonitor:
-        port: http
         path: /metrics
       ingress:
         enabled: false

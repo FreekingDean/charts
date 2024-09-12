@@ -9,16 +9,15 @@ image:
 
 command: []
 
-ports: []
-  # - name: http
-  #   value: 8080
+ports:
+  http: 8080
 
 ingress:
   enabled: true
   host: deangalvin.dev
 
 serviceMonitor:
-  port: http
+  enabled: true
   path: /metrics
   scheme: http
 

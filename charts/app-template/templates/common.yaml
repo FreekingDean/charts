@@ -60,17 +60,27 @@ service:
   app:
     controller: {{ .Release.Name }}
     ports:
-    {{- range $port := .Values.newTemplate.ports}}
-      {{ $port.name }}:
-        port: {{ $port.port }}
+    {{- range $name, $port := .Values.newTemplate.ports}}
+      {{ $name }}:
+        {{- if eq $name "http" }}
+        primary: true
+        {{- end }}
+        port: {{ $port }}
     {{- end }}
 {{- end }}
 
+{{- if .Values.newTemplate.serviceMonitor.enabled }}
 serviceMonitor:
   app-test:
     serviceName: {{ .Release.Name }}
     endpoints:
-      - port: {{ .Values.newTemplate.serviceMonitor.port }}
+      {{- if .Values.newTemplate.ports.metrics }}
+      - port: {{ .Values.newTemplate.ports.metrics }}
+      {{- else if .Values.newTemplate.ports.http}}
+      - port: {{ .Values.newTemplate.ports.http }}
+      {{- else }}
+      {{- fail "Must set either a 'metrics' or 'http' port'" }}
+      {{- end }}
         scheme: {{ .Values.newTemplate.serviceMonitor.scheme }}
         path: {{ .Values.newTemplate.serviceMonitor.path }}
         interval: 1m
@@ -80,6 +90,7 @@ serviceMonitor:
           name: {{ .Values.newTemplate.serviceMonitor.bearerTokenSecret.name }}
           key: {{ .Values.newTemplate.serviceMonitor.bearerTokenSecret.key}}
         {{- end }}
+{{- end }}
 
 persistence:
   {{- range $name, $config := .Values.newTemplate.persistence }}
@@ -103,7 +114,7 @@ ingress:
           - path: /
             service:
               name: {{ .Release.Name }}
-              port: {{ .Values.newTemplate.ingress.port }}
+              port: {{ .Values.newTemplate.ports.http }}
     tls:
       - secretName: "deangalvin-dev-production-tls"
         hosts:

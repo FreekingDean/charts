@@ -147,7 +147,7 @@ validates my home-assistant setup:
             name: hass-secret
           interval: 1m
           path: /api/prometheus
-          port: http
+          port: 8123
           scheme: https
           scrapeTimeout: 10s
       jobLabel: RELEASE-NAME

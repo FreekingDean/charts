@@ -116,7 +116,7 @@ validates my glauth:
       endpoints:
         - interval: 1m
           path: /metrics
-          port: http
+          port: 5555
           scheme: http
           scrapeTimeout: 10s
       jobLabel: RELEASE-NAME
