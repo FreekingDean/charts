@@ -1,0 +1,73 @@
+---
+name: "Test Helm Charts"
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths: ["kubernetes/**.yaml"]
+
+jobs:
+  changed-files:
+    name: Changed Files
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.changed-files.outputs.all_changed_and_modified_files }}
+    steps:
+      - name: Checkout Default Branch
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+
+      - name: Get Changed Files
+        id: changed-files
+        uses: tj-actions/changed-files@e9772d140489982e0e3704fea5ee93d536f1e275 # v45
+        with:
+          files: charts/**
+          dir_names: true
+          dir_names_max_depth: 2
+          json: true
+          escape_json: false
+
+      - name: List All Changed Files
+        run: echo "${{ steps.changed-files.outputs.all_changed_and_modified_files }}"
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: ["changed-files"]
+    strategy:
+      fail-fast: false
+      matrix:
+        charts: ${{ fromJSON(needs.changed-files.outputs.matrix) }}
+      max-parallel: 4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@fe7b79cd5ee1e45176fcad797de68ecaf3ca4814 # v4
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Update Repos
+        run: |
+          helm dep update ${{ matrix.charts }}
+
+      - name: Verify no updates after helm dep update
+        run: |
+          git diff --exit-code
+
+      - uses: d3adb5/helm-unittest-action@v2
+        with:
+          helm-version: v3.8.0
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test helm unittest
+        run: |
+          helm plugin install https://github.com/helm-unittest/helm-unittest.git
+          helm unittest ${{ matrix.charts }}
