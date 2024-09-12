@@ -1,21 +1,20 @@
 tests:
   - it: validates my home-assistant setup
     set:
+      stateful: true
       image:
         repository: ghcr.io/onedr0p/home-assistant
         tag: 2024.9.1
       serviceMonitor:
-        port: http
         scheme: https
         path: /api/prometheus
         bearerTokenSecret:
           name: hass-secret
           key: token
       ports:
-        http: &port 8123
+        http: 8123
       ingress:
         subdomain: hass
-        port: *port
         icon: mdi:home-assistant
       persistence:
         config:

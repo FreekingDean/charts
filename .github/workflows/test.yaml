@@ -1,10 +1,10 @@
 ---
-name: Release Charts
+name: "Test Helm Charts"
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    branches: ["main"]
+    paths: ["charts/**"]
 
 jobs:
   changed-files:
@@ -28,8 +28,8 @@ jobs:
 
       - name: List All Changed Files
         run: echo "${{ steps.changed-files.outputs.all_changed_and_modified_files }}"
-  release:
-    name: Test and Release
+  test:
+    name: Test Charts
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -63,17 +63,7 @@ jobs:
         run: |
           git diff --exit-code
 
-      - uses: d3adb5/helm-unittest-action@v2
-        with:
-          helm-version: v3.8.0
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Test helm unittest
         run: |
           helm plugin install https://github.com/helm-unittest/helm-unittest.git
           helm unittest ${{ matrix.charts }}
-
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@a917fd15b20e8b64b94d9158ad54cd6345335584 # v1.6.0
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

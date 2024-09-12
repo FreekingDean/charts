@@ -1,0 +1,27 @@
+tests:
+  - it: validates my recyclarr
+    set:
+      stateful: true
+      persistence:
+        config:
+          existingClaim: recyclarr-0
+          globalMounts:
+            - path: /config
+        config-file:
+          enabled: true
+          type: configMap
+          name: recyclarr-configmap
+          globalMounts:
+            - path: "/config/recyclarr.yml"
+              subPath: recyclarr.yml
+      image:
+        repository: ghcr.io/recyclarr/recyclarr
+        tag: edge
+      env:
+        TZ: America/New_York
+        RADARR__API_KEY: "${RADARR__API_KEY}"
+        RADARR4K__API_KEY: "${RADARR4K__API_KEY}"
+        SONARR__API_KEY: "${SONARR__API_KEY}"
+        SONARR4K__API_KEY: "${SONARR4K__API_KEY}"
+    asserts:
+      - matchSnapshot: {}

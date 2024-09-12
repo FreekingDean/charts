@@ -3,12 +3,14 @@ validates my home-assistant setup:
     apiVersion: apps/v1
     kind: Deployment
     metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
       labels:
         app.kubernetes.io/component: RELEASE-NAME
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.4
+        helm.sh/chart: app-template-0.0.5
       name: RELEASE-NAME
     spec:
       replicas: 2
@@ -86,7 +88,7 @@ validates my home-assistant setup:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
         app.kubernetes.io/service: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.4
+        helm.sh/chart: app-template-0.0.5
       name: RELEASE-NAME
     spec:
       ports:
@@ -103,11 +105,13 @@ validates my home-assistant setup:
     apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
+      annotations:
+        hajimari.io/icon: mdi:home-assistant
       labels:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.4
+        helm.sh/chart: app-template-0.0.5
       name: RELEASE-NAME
     spec:
       ingressClassName: traefik
@@ -134,7 +138,7 @@ validates my home-assistant setup:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.4
+        helm.sh/chart: app-template-0.0.5
       name: RELEASE-NAME
     spec:
       endpoints:
@@ -143,7 +147,7 @@ validates my home-assistant setup:
             name: hass-secret
           interval: 1m
           path: /api/prometheus
-          port: http
+          port: 8123
           scheme: https
           scrapeTimeout: 10s
       jobLabel: RELEASE-NAME

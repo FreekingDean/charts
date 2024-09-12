@@ -1,5 +1,8 @@
 replicas: 2
 
+
+stateful: false
+
 image:
   repository: busybox
   tag: latest
@@ -14,7 +17,7 @@ ingress:
   host: deangalvin.dev
 
 serviceMonitor:
-  port: http
+  enabled: true
   path: /metrics
   scheme: http
 
@@ -25,5 +28,8 @@ persistence: {}
   #    items:
   #      - key: server.toml
   #      - path: server.toml
+
+env: {}
+  #KEY: value
 
 newTemplate: {}

@@ -1,14 +1,16 @@
-manifest should match snapshot:
+validates my recyclarr:
   1: |
     apiVersion: apps/v1
     kind: Deployment
     metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
       labels:
         app.kubernetes.io/component: RELEASE-NAME
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.2
+        helm.sh/chart: app-template-0.0.5
       name: RELEASE-NAME
     spec:
       replicas: 2
@@ -29,7 +31,18 @@ manifest should match snapshot:
         spec:
           automountServiceAccountToken: true
           containers:
-            - image: busybox:latest
+            - env:
+                - name: RADARR4K__API_KEY
+                  value: ${RADARR4K__API_KEY}
+                - name: RADARR__API_KEY
+                  value: ${RADARR__API_KEY}
+                - name: SONARR4K__API_KEY
+                  value: ${SONARR4K__API_KEY}
+                - name: SONARR__API_KEY
+                  value: ${SONARR__API_KEY}
+                - name: TZ
+                  value: America/New_York
+              image: ghcr.io/recyclarr/recyclarr:edge
               livenessProbe:
                 failureThreshold: 3
                 initialDelaySeconds: 0
@@ -55,6 +68,9 @@ manifest should match snapshot:
               volumeMounts:
                 - mountPath: /config
                   name: config
+                - mountPath: /config/recyclarr.yml
+                  name: config-file
+                  subPath: recyclarr.yml
           dnsPolicy: ClusterFirst
           enableServiceLinks: false
           hostIPC: false
@@ -63,11 +79,11 @@ manifest should match snapshot:
           serviceAccountName: default
           volumes:
             - name: config
-              secret:
-                items:
-                  - key: server.toml
-                  - path: server.toml
-                secretName: myapp-secret
+              persistentVolumeClaim:
+                claimName: recyclarr-0
+            - configMap:
+                name: recyclarr-configmap
+              name: config-file
   2: |
     apiVersion: v1
     kind: Service
@@ -77,7 +93,7 @@ manifest should match snapshot:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
         app.kubernetes.io/service: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.2
+        helm.sh/chart: app-template-0.0.5
       name: RELEASE-NAME
     spec:
       ports:
@@ -98,7 +114,7 @@ manifest should match snapshot:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.2
+        helm.sh/chart: app-template-0.0.5
       name: RELEASE-NAME
     spec:
       ingressClassName: traefik
@@ -110,7 +126,7 @@ manifest should match snapshot:
                   service:
                     name: RELEASE-NAME
                     port:
-                      number: null
+                      number: 8080
                 path: /
                 pathType: Prefix
       tls:
@@ -125,13 +141,13 @@ manifest should match snapshot:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.2
+        helm.sh/chart: app-template-0.0.5
       name: RELEASE-NAME
     spec:
       endpoints:
         - interval: 1m
           path: /metrics
-          port: http
+          port: 8080
           scheme: http
           scrapeTimeout: 10s
       jobLabel: RELEASE-NAME

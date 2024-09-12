@@ -3,12 +3,14 @@ manifest should match snapshot:
     apiVersion: apps/v1
     kind: Deployment
     metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
       labels:
         app.kubernetes.io/component: RELEASE-NAME
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.4
+        helm.sh/chart: app-template-0.0.5
       name: RELEASE-NAME
     spec:
       replicas: 2
@@ -19,7 +21,7 @@ manifest should match snapshot:
           app.kubernetes.io/instance: RELEASE-NAME
           app.kubernetes.io/name: RELEASE-NAME
       strategy:
-        type: Recreate
+        type: RollingUpdate
       template:
         metadata:
           labels:
@@ -67,7 +69,7 @@ manifest should match snapshot:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
         app.kubernetes.io/service: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.4
+        helm.sh/chart: app-template-0.0.5
       name: RELEASE-NAME
     spec:
       ports:
@@ -88,7 +90,7 @@ manifest should match snapshot:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.4
+        helm.sh/chart: app-template-0.0.5
       name: RELEASE-NAME
     spec:
       ingressClassName: traefik
@@ -100,7 +102,7 @@ manifest should match snapshot:
                   service:
                     name: RELEASE-NAME
                     port:
-                      number: null
+                      number: 8080
                 path: /
                 pathType: Prefix
       tls:
@@ -115,13 +117,13 @@ manifest should match snapshot:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.4
+        helm.sh/chart: app-template-0.0.5
       name: RELEASE-NAME
     spec:
       endpoints:
         - interval: 1m
           path: /metrics
-          port: http
+          port: 8080
           scheme: http
           scrapeTimeout: 10s
       jobLabel: RELEASE-NAME
