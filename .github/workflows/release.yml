@@ -57,6 +57,10 @@ jobs:
         run: |
           helm dep update ${{ matrix.charts }}
 
+      - name: Verify no updates after helm dep update
+        run: |
+          git diff --exit-code
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@a917fd15b20e8b64b94d9158ad54cd6345335584 # v1.6.0
         env:
