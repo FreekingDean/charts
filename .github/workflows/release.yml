@@ -61,6 +61,16 @@ jobs:
         run: |
           git diff --exit-code
 
+      - uses: d3adb5/helm-unittest-action@v2
+        with:
+          helm-version: v3.8.0
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test helm unittest
+        run: |
+          helm plugin install https://github.com/helm-unittest/helm-unittest.git
+          helm unittest ${{ matrix.charts }}
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@a917fd15b20e8b64b94d9158ad54cd6345335584 # v1.6.0
         env:
