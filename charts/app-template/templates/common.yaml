@@ -69,7 +69,7 @@ serviceMonitor:
 persistence:
   {{- range $name, $config := .Values.newTemplate.persistence }}
   {{ $name }}:
-    enabled: false
+    enabled: true
     {{ $config | toYaml | nindent 4 }}
   {{- end }}
 

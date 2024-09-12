@@ -1,0 +1,36 @@
+tests:
+  - it: manifest should match snapshot
+    set:
+      image:
+        repository: ghcr.io/onedr0p/home-assistant
+        tag: 2024.9.1
+      serviceMonitor:
+        port: http
+        scheme: https
+        path: /api/prometheus
+        bearerTokenSecret:
+          name: hass-secret
+          key: token
+      ports:
+        http: &port 8123
+      ingress:
+        subdomain: hass
+        port: *port
+        icon: mdi:home-assistant
+      persistence:
+        config:
+          existingClaim: home-assistant-0
+          globalMounts:
+            - path: /config
+        logs:
+          type: emptyDir
+          globalMounts:
+            - path: /config/logs
+        tts:
+          type: emptyDir
+          globalMounts:
+            - path: /config/tts
+        tmp:
+          type: emptyDir
+    asserts:
+      - matchSnapshot: {}

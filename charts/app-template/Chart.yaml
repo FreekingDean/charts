@@ -2,7 +2,7 @@
 apiVersion: v2
 description: A FreekingDean templated Chart based on the bjw-s/app-template chart
 name: app-template
-version: 0.0.2
+version: 0.0.3
 kubeVersion: ">=1.22.0-0"
 maintainers:
   - name: FreekingDean
