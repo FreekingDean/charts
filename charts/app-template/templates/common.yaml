@@ -8,6 +8,8 @@
 {{ $_ := set .Values.newTemplate "persistence" .Values.persistence }}
 {{ $_ := set .Values.newTemplate "stateful" .Values.stateful }}
 {{ $_ := set .Values.newTemplate "env" .Values.env }}
+{{ $_ := set .Values.newTemplate "loadbalanced" .Values.loadbalanced }}
+{{ $_ := set .Values.newTemplate "istio" .Values.istio }}
 
 {{ $_ := unset .Values "replicas" }}
 {{ $_ := unset .Values "image" }}
@@ -18,6 +20,8 @@
 {{ $_ := unset .Values "persistence" }}
 {{ $_ := unset .Values "stateful" }}
 {{ $_ := unset .Values "env" }}
+{{ $_ := unset .Values "loadbalanced" }}
+{{ $_ := unset .Values "istio" }}
 
 {{- include "bjw-s.common.loader.init" . }}
 
@@ -25,6 +29,12 @@
 
 global:
   nameOverride: "{{ .Release.Name }}"
+
+{{- if .Values.istio }}
+defaultPodOptions:
+  annotations:
+    sidecar.istio.io/inject: "false"
+{{- end }}
 
 controllers:
   {{ .Release.Name }}:
@@ -58,6 +68,10 @@ controllers:
 {{- if .Values.newTemplate.ports }}
 service:
   app:
+    {{- if .Values.newTemplate.loadbalanced }}
+    type: LoadBalancer
+    externalTrafficPolicy: Local
+    {{- end }}
     controller: {{ .Release.Name }}
     ports:
     {{- range $name, $port := .Values.newTemplate.ports}}
