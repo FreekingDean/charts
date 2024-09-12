@@ -28,6 +28,7 @@ jobs:
       - name: List All Changed Files
         run: echo "${{ steps.changed-files.outputs.all_changed_and_modified_files }}"
   release:
+    name: Test and Release
     permissions:
       contents: write
     runs-on: ubuntu-latest
