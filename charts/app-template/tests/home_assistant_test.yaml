@@ -1,6 +1,7 @@
 tests:
   - it: validates my home-assistant setup
     set:
+      stateful: true
       image:
         repository: ghcr.io/onedr0p/home-assistant
         tag: 2024.9.1
@@ -12,7 +13,8 @@ tests:
           name: hass-secret
           key: token
       ports:
-        http: &port 8123
+        - name: http
+          port: &port 8123
       ingress:
         subdomain: hass
         port: *port

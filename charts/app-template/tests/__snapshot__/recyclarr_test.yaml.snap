@@ -1,14 +1,16 @@
-manifest should match snapshot:
+validates my recyclarr:
   1: |
     apiVersion: apps/v1
     kind: Deployment
     metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
       labels:
         app.kubernetes.io/component: RELEASE-NAME
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.2
+        helm.sh/chart: app-template-0.0.4
       name: RELEASE-NAME
     spec:
       replicas: 2
@@ -29,32 +31,25 @@ manifest should match snapshot:
         spec:
           automountServiceAccountToken: true
           containers:
-            - image: busybox:latest
-              livenessProbe:
-                failureThreshold: 3
-                initialDelaySeconds: 0
-                periodSeconds: 10
-                tcpSocket:
-                  port: 8080
-                timeoutSeconds: 1
+            - env:
+                - name: RADARR4K__API_KEY
+                  value: ${RADARR4K__API_KEY}
+                - name: RADARR__API_KEY
+                  value: ${RADARR__API_KEY}
+                - name: SONARR4K__API_KEY
+                  value: ${SONARR4K__API_KEY}
+                - name: SONARR__API_KEY
+                  value: ${SONARR__API_KEY}
+                - name: TZ
+                  value: America/New_York
+              image: ghcr.io/recyclarr/recyclarr:edge
               name: RELEASE-NAME
-              readinessProbe:
-                failureThreshold: 3
-                initialDelaySeconds: 0
-                periodSeconds: 10
-                tcpSocket:
-                  port: 8080
-                timeoutSeconds: 1
-              startupProbe:
-                failureThreshold: 30
-                initialDelaySeconds: 0
-                periodSeconds: 5
-                tcpSocket:
-                  port: 8080
-                timeoutSeconds: 1
               volumeMounts:
                 - mountPath: /config
                   name: config
+                - mountPath: /config/recyclarr.yml
+                  name: config-file
+                  subPath: recyclarr.yml
           dnsPolicy: ClusterFirst
           enableServiceLinks: false
           hostIPC: false
@@ -63,34 +58,12 @@ manifest should match snapshot:
           serviceAccountName: default
           volumes:
             - name: config
-              secret:
-                items:
-                  - key: server.toml
-                  - path: server.toml
-                secretName: myapp-secret
+              persistentVolumeClaim:
+                claimName: recyclarr-0
+            - configMap:
+                name: recyclarr-configmap
+              name: config-file
   2: |
-    apiVersion: v1
-    kind: Service
-    metadata:
-      labels:
-        app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Helm
-        app.kubernetes.io/name: RELEASE-NAME
-        app.kubernetes.io/service: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.2
-      name: RELEASE-NAME
-    spec:
-      ports:
-        - name: http
-          port: 8080
-          protocol: TCP
-          targetPort: 8080
-      selector:
-        app.kubernetes.io/component: RELEASE-NAME
-        app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/name: RELEASE-NAME
-      type: ClusterIP
-  3: |
     apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
@@ -98,7 +71,7 @@ manifest should match snapshot:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.2
+        helm.sh/chart: app-template-0.0.4
       name: RELEASE-NAME
     spec:
       ingressClassName: traefik
@@ -117,7 +90,7 @@ manifest should match snapshot:
         - hosts:
             - .deangalvin.dev
           secretName: deangalvin-dev-production-tls
-  4: |
+  3: |
     apiVersion: monitoring.coreos.com/v1
     kind: ServiceMonitor
     metadata:
@@ -125,7 +98,7 @@ manifest should match snapshot:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.2
+        helm.sh/chart: app-template-0.0.4
       name: RELEASE-NAME
     spec:
       endpoints:

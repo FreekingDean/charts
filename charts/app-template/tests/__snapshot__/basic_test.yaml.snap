@@ -3,6 +3,8 @@ manifest should match snapshot:
     apiVersion: apps/v1
     kind: Deployment
     metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
       labels:
         app.kubernetes.io/component: RELEASE-NAME
         app.kubernetes.io/instance: RELEASE-NAME
@@ -19,7 +21,7 @@ manifest should match snapshot:
           app.kubernetes.io/instance: RELEASE-NAME
           app.kubernetes.io/name: RELEASE-NAME
       strategy:
-        type: Recreate
+        type: RollingUpdate
       template:
         metadata:
           labels:
@@ -30,28 +32,7 @@ manifest should match snapshot:
           automountServiceAccountToken: true
           containers:
             - image: busybox:latest
-              livenessProbe:
-                failureThreshold: 3
-                initialDelaySeconds: 0
-                periodSeconds: 10
-                tcpSocket:
-                  port: 8080
-                timeoutSeconds: 1
               name: RELEASE-NAME
-              readinessProbe:
-                failureThreshold: 3
-                initialDelaySeconds: 0
-                periodSeconds: 10
-                tcpSocket:
-                  port: 8080
-                timeoutSeconds: 1
-              startupProbe:
-                failureThreshold: 30
-                initialDelaySeconds: 0
-                periodSeconds: 5
-                tcpSocket:
-                  port: 8080
-                timeoutSeconds: 1
           dnsPolicy: ClusterFirst
           enableServiceLinks: false
           hostIPC: false
@@ -59,28 +40,6 @@ manifest should match snapshot:
           hostPID: false
           serviceAccountName: default
   2: |
-    apiVersion: v1
-    kind: Service
-    metadata:
-      labels:
-        app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Helm
-        app.kubernetes.io/name: RELEASE-NAME
-        app.kubernetes.io/service: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.4
-      name: RELEASE-NAME
-    spec:
-      ports:
-        - name: http
-          port: 8080
-          protocol: TCP
-          targetPort: 8080
-      selector:
-        app.kubernetes.io/component: RELEASE-NAME
-        app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/name: RELEASE-NAME
-      type: ClusterIP
-  3: |
     apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
@@ -107,7 +66,7 @@ manifest should match snapshot:
         - hosts:
             - .deangalvin.dev
           secretName: deangalvin-dev-production-tls
-  4: |
+  3: |
     apiVersion: monitoring.coreos.com/v1
     kind: ServiceMonitor
     metadata:

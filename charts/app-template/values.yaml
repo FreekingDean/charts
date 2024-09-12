@@ -1,13 +1,16 @@
 replicas: 2
 
+stateful: false
+
 image:
   repository: busybox
   tag: latest
 
 command: []
 
-ports:
-  http: 8080
+ports: []
+  # - name: http
+  #   value: 8080
 
 ingress:
   enabled: true
@@ -25,5 +28,8 @@ persistence: {}
   #    items:
   #      - key: server.toml
   #      - path: server.toml
+
+env: {}
+  #KEY: value
 
 newTemplate: {}

@@ -1,0 +1,31 @@
+tests:
+  - it: validates my glauth
+    set:
+      replicas: 2
+      image:
+        repository: ghcr.io/onedr0p/glauth
+        tag: v2.2.0-rc1
+      command: ["/app/glauth", "-c", "/config"]
+      ports:
+        - name: http
+          port: 5555
+        - name: ldap
+          port: 389
+      serviceMonitor:
+        port: http
+        path: /metrics
+      ingress:
+        enabled: false
+      persistence:
+        config:
+          type: secret
+          name: glauth-secret
+          items:
+            - key: server.toml
+              path: server.toml
+            - key: users.toml
+              path: users.toml
+            - key: groups.toml
+              path: groups.toml
+    asserts:
+      - matchSnapshot: {}

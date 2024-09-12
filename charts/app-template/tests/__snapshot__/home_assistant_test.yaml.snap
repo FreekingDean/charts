@@ -3,6 +3,8 @@ validates my home-assistant setup:
     apiVersion: apps/v1
     kind: Deployment
     metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
       labels:
         app.kubernetes.io/component: RELEASE-NAME
         app.kubernetes.io/instance: RELEASE-NAME
@@ -103,6 +105,8 @@ validates my home-assistant setup:
     apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
+      annotations:
+        hajimari.io/icon: mdi:home-assistant
       labels:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm

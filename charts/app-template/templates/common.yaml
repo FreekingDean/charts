@@ -6,6 +6,8 @@
 {{ $_ := set .Values.newTemplate "ingress" .Values.ingress }}
 {{ $_ := set .Values.newTemplate "serviceMonitor" .Values.serviceMonitor }}
 {{ $_ := set .Values.newTemplate "persistence" .Values.persistence }}
+{{ $_ := set .Values.newTemplate "stateful" .Values.stateful }}
+{{ $_ := set .Values.newTemplate "env" .Values.env }}
 
 {{ $_ := unset .Values "replicas" }}
 {{ $_ := unset .Values "image" }}
@@ -14,6 +16,8 @@
 {{ $_ := unset .Values "ingress" }}
 {{ $_ := unset .Values "serviceMonitor" }}
 {{ $_ := unset .Values "persistence" }}
+{{ $_ := unset .Values "stateful" }}
+{{ $_ := unset .Values "env" }}
 
 {{- include "bjw-s.common.loader.init" . }}
 
@@ -24,6 +28,9 @@ global:
 
 controllers:
   {{ .Release.Name }}:
+    strategy: {{ ternary "Recreate" "RollingUpdate" .Values.newTemplate.stateful }}
+    annotations:
+      reloader.stakater.com/auto: "true"
     replicas: {{ .Values.newTemplate.replicas }}
     containers:
       {{ .Release.Name }}:
@@ -31,6 +38,12 @@ controllers:
           repository: {{ .Values.newTemplate.image.repository }}
           tag: {{ .Values.newTemplate.image.tag }}
         command: {{ .Values.newTemplate.command }}
+        {{ if .Values.newTemplate.env }}
+        env:
+          {{- range $key, $value := .Values.newTemplate.env }}
+          {{ $key }}: "{{ $value }}"
+          {{- end }}
+        {{ end }}
         probes:
           liveness:
             enabled: true
@@ -42,14 +55,16 @@ controllers:
               failureThreshold: 30
               periodSeconds: 5
 
+{{- if .Values.newTemplate.ports }}
 service:
   app:
     controller: {{ .Release.Name }}
     ports:
-    {{- range $name, $port := .Values.newTemplate.ports}}
-      {{ $name }}:
-        port: {{ $port }}
+    {{- range $port := .Values.newTemplate.ports}}
+      {{ $port.name }}:
+        port: {{ $port.port }}
     {{- end }}
+{{- end }}
 
 serviceMonitor:
   app-test:
@@ -78,9 +93,9 @@ ingress:
   {{ .Release.Name }}:
     enabled: true
     className: "traefik"
-    {{- if .Values.ingress.icon }}
+    {{- if .Values.newTemplate.ingress.icon }}
     annotations:
-      hajimari.io/icon: {{ .Values.ingress.icon }}
+      hajimari.io/icon: {{ .Values.newTemplate.ingress.icon }}
     {{- end }}
     hosts:
       - host: {{ .Values.newTemplate.ingress.subdomain }}.deangalvin.dev

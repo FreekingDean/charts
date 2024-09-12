@@ -1,14 +1,16 @@
-manifest should match snapshot:
+validates my glauth:
   1: |
     apiVersion: apps/v1
     kind: Deployment
     metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
       labels:
         app.kubernetes.io/component: RELEASE-NAME
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.2
+        helm.sh/chart: app-template-0.0.4
       name: RELEASE-NAME
     spec:
       replicas: 2
@@ -19,7 +21,7 @@ manifest should match snapshot:
           app.kubernetes.io/instance: RELEASE-NAME
           app.kubernetes.io/name: RELEASE-NAME
       strategy:
-        type: Recreate
+        type: RollingUpdate
       template:
         metadata:
           labels:
@@ -29,13 +31,15 @@ manifest should match snapshot:
         spec:
           automountServiceAccountToken: true
           containers:
-            - image: ghcr.io/onedr0p/home-assistant:2024.9.1
+            - command:
+                - /app/glauth -c /config
+              image: ghcr.io/onedr0p/glauth:v2.2.0-rc1
               livenessProbe:
                 failureThreshold: 3
                 initialDelaySeconds: 0
                 periodSeconds: 10
                 tcpSocket:
-                  port: 8123
+                  port: 5555
                 timeoutSeconds: 1
               name: RELEASE-NAME
               readinessProbe:
@@ -43,24 +47,18 @@ manifest should match snapshot:
                 initialDelaySeconds: 0
                 periodSeconds: 10
                 tcpSocket:
-                  port: 8123
+                  port: 5555
                 timeoutSeconds: 1
               startupProbe:
                 failureThreshold: 30
                 initialDelaySeconds: 0
                 periodSeconds: 5
                 tcpSocket:
-                  port: 8123
+                  port: 5555
                 timeoutSeconds: 1
               volumeMounts:
                 - mountPath: /config
                   name: config
-                - mountPath: /config/logs
-                  name: logs
-                - mountPath: /tmp
-                  name: tmp
-                - mountPath: /config/tts
-                  name: tts
           dnsPolicy: ClusterFirst
           enableServiceLinks: false
           hostIPC: false
@@ -69,14 +67,15 @@ manifest should match snapshot:
           serviceAccountName: default
           volumes:
             - name: config
-              persistentVolumeClaim:
-                claimName: home-assistant-0
-            - emptyDir: {}
-              name: logs
-            - emptyDir: {}
-              name: tmp
-            - emptyDir: {}
-              name: tts
+              secret:
+                items:
+                  - key: server.toml
+                    path: server.toml
+                  - key: users.toml
+                    path: users.toml
+                  - key: groups.toml
+                    path: groups.toml
+                secretName: glauth-secret
   2: |
     apiVersion: v1
     kind: Service
@@ -86,47 +85,24 @@ manifest should match snapshot:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
         app.kubernetes.io/service: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.2
+        helm.sh/chart: app-template-0.0.4
       name: RELEASE-NAME
     spec:
       ports:
         - name: http
-          port: 8123
+          port: 5555
           protocol: TCP
-          targetPort: 8123
+          targetPort: 5555
+        - name: ldap
+          port: 389
+          protocol: TCP
+          targetPort: 389
       selector:
         app.kubernetes.io/component: RELEASE-NAME
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/name: RELEASE-NAME
       type: ClusterIP
   3: |
-    apiVersion: networking.k8s.io/v1
-    kind: Ingress
-    metadata:
-      labels:
-        app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Helm
-        app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.2
-      name: RELEASE-NAME
-    spec:
-      ingressClassName: traefik
-      rules:
-        - host: hass.deangalvin.dev
-          http:
-            paths:
-              - backend:
-                  service:
-                    name: RELEASE-NAME
-                    port:
-                      number: 8123
-                path: /
-                pathType: Prefix
-      tls:
-        - hosts:
-            - hass.deangalvin.dev
-          secretName: deangalvin-dev-production-tls
-  4: |
     apiVersion: monitoring.coreos.com/v1
     kind: ServiceMonitor
     metadata:
@@ -134,15 +110,12 @@ manifest should match snapshot:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.2
+        helm.sh/chart: app-template-0.0.4
       name: RELEASE-NAME
     spec:
       endpoints:
-        - bearerTokenSecret:
-            key: token
-            name: hass-secret
-          interval: 1m
-          path: /api/prometheus
+        - interval: 1m
+          path: /metrics
           port: http
           scheme: http
           scrapeTimeout: 10s
