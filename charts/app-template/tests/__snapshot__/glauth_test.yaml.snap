@@ -10,7 +10,7 @@ validates my glauth:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.9
+        helm.sh/chart: app-template-0.0.11
       name: RELEASE-NAME
     spec:
       replicas: 2
@@ -32,7 +32,9 @@ validates my glauth:
           automountServiceAccountToken: true
           containers:
             - command:
-                - /app/glauth -c /config
+                - /app/glauth
+                - -c
+                - /config
               image: ghcr.io/onedr0p/glauth:v2.2.0-rc1
               livenessProbe:
                 failureThreshold: 3
@@ -85,7 +87,7 @@ validates my glauth:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
         app.kubernetes.io/service: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.9
+        helm.sh/chart: app-template-0.0.11
       name: RELEASE-NAME
     spec:
       ports:
@@ -110,7 +112,7 @@ validates my glauth:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.9
+        helm.sh/chart: app-template-0.0.11
       name: RELEASE-NAME
     spec:
       endpoints:
