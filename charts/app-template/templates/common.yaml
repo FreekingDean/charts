@@ -41,7 +41,7 @@ controllers:
     strategy: {{ ternary "Recreate" "RollingUpdate" .Values.newTemplate.stateful }}
     annotations:
       reloader.stakater.com/auto: "true"
-    replicas: {{ .Values.newTemplate.replicas }}
+    replicas: {{ ternary 1 .Values.newTemplate.replicas .Values.newTemplate.stateful }}
     containers:
       {{ .Release.Name }}:
         image:
