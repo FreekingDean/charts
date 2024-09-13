@@ -89,9 +89,9 @@ serviceMonitor:
     serviceName: {{ .Release.Name }}
     endpoints:
       {{- if .Values.newTemplate.ports.metrics }}
-      - port: {{ .Values.newTemplate.ports.metrics }}
+      - port: metrics
       {{- else if .Values.newTemplate.ports.http}}
-      - port: {{ .Values.newTemplate.ports.http }}
+      - port: http
       {{- else }}
       {{- fail "Must set either a 'metrics' or 'http' port'" }}
       {{- end }}

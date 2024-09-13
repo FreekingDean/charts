@@ -10,7 +10,7 @@ validates my glauth:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.8
+        helm.sh/chart: app-template-0.0.9
       name: RELEASE-NAME
     spec:
       replicas: 2
@@ -85,7 +85,7 @@ validates my glauth:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
         app.kubernetes.io/service: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.8
+        helm.sh/chart: app-template-0.0.9
       name: RELEASE-NAME
     spec:
       ports:
@@ -110,13 +110,13 @@ validates my glauth:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.8
+        helm.sh/chart: app-template-0.0.9
       name: RELEASE-NAME
     spec:
       endpoints:
         - interval: 1m
           path: /metrics
-          port: 5555
+          port: http
           scheme: http
           scrapeTimeout: 10s
       jobLabel: RELEASE-NAME
