@@ -37,3 +37,5 @@ env: {}
   #KEY: value
 
 newTemplate: {}
+
+resources: {}

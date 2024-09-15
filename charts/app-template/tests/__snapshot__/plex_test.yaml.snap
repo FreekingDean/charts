@@ -1,0 +1,179 @@
+validates my home-assistant setup:
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
+      labels:
+        app.kubernetes.io/component: RELEASE-NAME
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: RELEASE-NAME
+        helm.sh/chart: app-template-0.0.11
+      name: RELEASE-NAME
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 3
+      selector:
+        matchLabels:
+          app.kubernetes.io/component: RELEASE-NAME
+          app.kubernetes.io/instance: RELEASE-NAME
+          app.kubernetes.io/name: RELEASE-NAME
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/component: RELEASE-NAME
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: RELEASE-NAME
+        spec:
+          automountServiceAccountToken: true
+          containers:
+            - env:
+                - name: PLEX_ADVERTISE_URL
+                  value: https://plex.deangalvin.dev:443
+                - name: PLEX_NO_AUTH_NETWORKS
+                  value: 192.168.2.0/24
+                - name: TZ
+                  value: America/New_York
+              image: ghcr.io/onedr0p/plex:1.41.0.8992-8463ad060
+              livenessProbe:
+                failureThreshold: 3
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                tcpSocket:
+                  port: 32400
+                timeoutSeconds: 1
+              name: RELEASE-NAME
+              readinessProbe:
+                failureThreshold: 3
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                tcpSocket:
+                  port: 32400
+                timeoutSeconds: 1
+              resources:
+                limits:
+                  memory: 10000Mi
+                requests:
+                  cpu: 100m
+                  memory: 2000Mi
+              startupProbe:
+                failureThreshold: 30
+                initialDelaySeconds: 0
+                periodSeconds: 5
+                tcpSocket:
+                  port: 32400
+                timeoutSeconds: 1
+              volumeMounts:
+                - mountPath: /config
+                  name: config
+                - mountPath: /media
+                  name: media
+                - mountPath: /transcode
+                  name: transcode
+          dnsPolicy: ClusterFirst
+          enableServiceLinks: false
+          hostIPC: false
+          hostNetwork: false
+          hostPID: false
+          securityContext:
+            fsGroup: 568
+            fsGroupChangePolicy: OnRootMismatch
+            runAsGroup: 568
+            runAsUser: 568
+            supplementalGroups:
+              - 44
+              - 109
+              - 10000
+          serviceAccountName: default
+          volumes:
+            - name: config
+              persistentVolumeClaim:
+                claimName: config-plex-0
+            - name: media
+              persistentVolumeClaim:
+                claimName: media
+            - emptyDir: {}
+              name: transcode
+  2: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: RELEASE-NAME
+        app.kubernetes.io/service: RELEASE-NAME
+        helm.sh/chart: app-template-0.0.11
+      name: RELEASE-NAME
+    spec:
+      externalTrafficPolicy: Local
+      ports:
+        - name: http
+          port: 32400
+          protocol: TCP
+          targetPort: 32400
+      selector:
+        app.kubernetes.io/component: RELEASE-NAME
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/name: RELEASE-NAME
+      type: LoadBalancer
+  3: |
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      annotations:
+        hajimari.io/icon: mdi:plex
+        traefik.ingress.kubernetes.io/router.middlewares: networking-localonly@kubernetescrd
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: RELEASE-NAME
+        helm.sh/chart: app-template-0.0.11
+      name: RELEASE-NAME
+    spec:
+      ingressClassName: traefik
+      rules:
+        - host: plex.deangalvin.dev
+          http:
+            paths:
+              - backend:
+                  service:
+                    name: RELEASE-NAME
+                    port:
+                      number: 32400
+                path: /
+                pathType: Prefix
+      tls:
+        - hosts:
+            - plex.deangalvin.dev
+          secretName: deangalvin-dev-production-tls
+  4: |
+    apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: RELEASE-NAME
+        helm.sh/chart: app-template-0.0.11
+      name: RELEASE-NAME
+    spec:
+      endpoints:
+        - interval: 1m
+          path: /metrics
+          port: http
+          scheme: http
+          scrapeTimeout: 10s
+      jobLabel: RELEASE-NAME
+      namespaceSelector:
+        matchNames:
+          - NAMESPACE
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: RELEASE-NAME
+          app.kubernetes.io/name: RELEASE-NAME
+          app.kubernetes.io/service: RELEASE-NAME

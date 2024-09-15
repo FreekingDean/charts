@@ -10,6 +10,7 @@
 {{ $_ := set .Values.newTemplate "env" .Values.env }}
 {{ $_ := set .Values.newTemplate "loadbalanced" .Values.loadbalanced }}
 {{ $_ := set .Values.newTemplate "istio" .Values.istio }}
+{{ $_ := set .Values.newTemplate "resources" .Values.resources }}
 
 {{ $_ := unset .Values "replicas" }}
 {{ $_ := unset .Values "image" }}
@@ -22,6 +23,7 @@
 {{ $_ := unset .Values "env" }}
 {{ $_ := unset .Values "loadbalanced" }}
 {{ $_ := unset .Values "istio" }}
+{{ $_ := unset .Values "resources" }}
 
 {{- include "bjw-s.common.loader.init" . }}
 
@@ -57,6 +59,10 @@ controllers:
           {{ $key }}: "{{ $value }}"
           {{- end }}
         {{ end }}
+        {{- if .Values.newTemplate.resources }}
+        resources:
+          {{ .Values.newTemplate.resources | toYaml | nindent 10 }}
+        {{- end }}
         probes:
           liveness:
             enabled: true
