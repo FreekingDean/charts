@@ -10,8 +10,9 @@ manifest should match snapshot:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.11
+        helm.sh/chart: app-template-0.0.12
       name: RELEASE-NAME
+      namespace: NAMESPACE
     spec:
       replicas: 2
       revisionHistoryLimit: 3
@@ -69,8 +70,9 @@ manifest should match snapshot:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
         app.kubernetes.io/service: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.11
+        helm.sh/chart: app-template-0.0.12
       name: RELEASE-NAME
+      namespace: NAMESPACE
     spec:
       ports:
         - name: http
@@ -90,8 +92,9 @@ manifest should match snapshot:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.11
+        helm.sh/chart: app-template-0.0.12
       name: RELEASE-NAME
+      namespace: NAMESPACE
     spec:
       ingressClassName: traefik
       rules:
@@ -117,8 +120,9 @@ manifest should match snapshot:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.11
+        helm.sh/chart: app-template-0.0.12
       name: RELEASE-NAME
+      namespace: NAMESPACE
     spec:
       endpoints:
         - interval: 1m
