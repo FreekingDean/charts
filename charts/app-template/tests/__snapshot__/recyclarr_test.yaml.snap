@@ -10,8 +10,9 @@ validates my recyclarr:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.11
+        helm.sh/chart: app-template-0.0.12
       name: RELEASE-NAME
+      namespace: NAMESPACE
     spec:
       replicas: 1
       revisionHistoryLimit: 3
@@ -93,8 +94,9 @@ validates my recyclarr:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
         app.kubernetes.io/service: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.11
+        helm.sh/chart: app-template-0.0.12
       name: RELEASE-NAME
+      namespace: NAMESPACE
     spec:
       ports:
         - name: http
@@ -114,8 +116,9 @@ validates my recyclarr:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.11
+        helm.sh/chart: app-template-0.0.12
       name: RELEASE-NAME
+      namespace: NAMESPACE
     spec:
       ingressClassName: traefik
       rules:
@@ -141,8 +144,9 @@ validates my recyclarr:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.11
+        helm.sh/chart: app-template-0.0.12
       name: RELEASE-NAME
+      namespace: NAMESPACE
     spec:
       endpoints:
         - interval: 1m
