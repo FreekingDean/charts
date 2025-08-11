@@ -10,7 +10,7 @@ validates my satisfactory setup:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.13
+        helm.sh/chart: app-template-0.0.14
       name: RELEASE-NAME
     spec:
       replicas: 1
@@ -79,7 +79,7 @@ validates my satisfactory setup:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
         app.kubernetes.io/service: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.13
+        helm.sh/chart: app-template-0.0.14
       name: RELEASE-NAME
     spec:
       externalTrafficPolicy: Local
@@ -94,7 +94,7 @@ validates my satisfactory setup:
           targetPort: 8888
         - name: server
           port: 7777
-          protocol: udp
+          protocol: UDP
           targetPort: 7777
       selector:
         app.kubernetes.io/component: RELEASE-NAME
@@ -109,7 +109,7 @@ validates my satisfactory setup:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.13
+        helm.sh/chart: app-template-0.0.14
       name: RELEASE-NAME
     spec:
       ingressClassName: traefik
