@@ -3,6 +3,7 @@
 {{ $_ := set .Values.newTemplate "image" .Values.image }}
 {{ $_ := set .Values.newTemplate "command" .Values.command }}
 {{ $_ := set .Values.newTemplate "ports" .Values.ports }}
+{{ $_ := set .Values.newTemplate "udpPorts" .Values.udpPorts }}
 {{ $_ := set .Values.newTemplate "ingress" .Values.ingress }}
 {{ $_ := set .Values.newTemplate "serviceMonitor" .Values.serviceMonitor }}
 {{ $_ := set .Values.newTemplate "persistence" .Values.persistence }}
@@ -24,6 +25,7 @@
 {{ $_ := unset .Values "loadbalanced" }}
 {{ $_ := unset .Values "istio" }}
 {{ $_ := unset .Values "resources" }}
+{{ $_ := unset .Values "udpPorts" }}
 
 {{- include "bjw-s.common.loader.init" . }}
 
@@ -89,6 +91,11 @@ service:
         primary: true
         {{- end }}
         port: {{ $port }}
+    {{- end }}
+    {{- range $name, $port := .Values.newTemplate.udpPorts}}
+      {{ $name }}:
+        port: {{ $port }}
+        protocol: udp
     {{- end }}
 {{- end }}
 
