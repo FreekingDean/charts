@@ -1,0 +1,126 @@
+validates my satisfactory setup:
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
+      labels:
+        app.kubernetes.io/component: RELEASE-NAME
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: RELEASE-NAME
+        helm.sh/chart: app-template-0.0.13
+      name: RELEASE-NAME
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 3
+      selector:
+        matchLabels:
+          app.kubernetes.io/component: RELEASE-NAME
+          app.kubernetes.io/instance: RELEASE-NAME
+          app.kubernetes.io/name: RELEASE-NAME
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/component: RELEASE-NAME
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: RELEASE-NAME
+        spec:
+          automountServiceAccountToken: true
+          containers:
+            - env:
+                - name: DATA_PATH
+                  value: /data
+              image: ghcr.io/wolveix/satisfactory-server:latest
+              livenessProbe:
+                failureThreshold: 3
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                tcpSocket:
+                  port: 7777
+                timeoutSeconds: 1
+              name: RELEASE-NAME
+              readinessProbe:
+                failureThreshold: 3
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                tcpSocket:
+                  port: 7777
+                timeoutSeconds: 1
+              startupProbe:
+                failureThreshold: 30
+                initialDelaySeconds: 0
+                periodSeconds: 5
+                tcpSocket:
+                  port: 7777
+                timeoutSeconds: 1
+              volumeMounts:
+                - mountPath: /data
+                  name: data
+          dnsPolicy: ClusterFirst
+          enableServiceLinks: false
+          hostIPC: false
+          hostNetwork: false
+          hostPID: false
+          serviceAccountName: default
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: satisfactory-config
+  2: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: RELEASE-NAME
+        app.kubernetes.io/service: RELEASE-NAME
+        helm.sh/chart: app-template-0.0.13
+      name: RELEASE-NAME
+    spec:
+      externalTrafficPolicy: Local
+      ports:
+        - name: http
+          port: 7777
+          protocol: TCP
+          targetPort: 7777
+        - name: messaging
+          port: 8888
+          protocol: TCP
+          targetPort: 8888
+      selector:
+        app.kubernetes.io/component: RELEASE-NAME
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/name: RELEASE-NAME
+      type: LoadBalancer
+  3: |
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: RELEASE-NAME
+        helm.sh/chart: app-template-0.0.13
+      name: RELEASE-NAME
+    spec:
+      ingressClassName: traefik
+      rules:
+        - host: .deangalvin.dev
+          http:
+            paths:
+              - backend:
+                  service:
+                    name: RELEASE-NAME
+                    port:
+                      number: 7777
+                path: /
+                pathType: Prefix
+      tls:
+        - hosts:
+            - .deangalvin.dev
+          secretName: deangalvin-dev-production-tls
