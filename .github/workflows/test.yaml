@@ -65,5 +65,5 @@ jobs:
 
       - name: Test helm unittest
         run: |
-          helm plugin install https://github.com/helm-unittest/helm-unittest.git
+          helm plugin install https://github.com/helm-unittest/helm-unittest.git --version v0.8.2
           helm unittest ${{ matrix.charts }}
