@@ -92,6 +92,10 @@ validates my satisfactory setup:
           port: 8888
           protocol: TCP
           targetPort: 8888
+        - name: server
+          port: 7777
+          protocol: udp
+          targetPort: 7777
       selector:
         app.kubernetes.io/component: RELEASE-NAME
         app.kubernetes.io/instance: RELEASE-NAME
