@@ -10,6 +10,8 @@ tests:
       ports:
         http: 7777
         messaging: 8888
+      udpPorts:
+        server: 7777
       ingress:
         enabled: true
       serviceMonitor:

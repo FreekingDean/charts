@@ -1,4 +1,4 @@
-validates my home-assistant setup:
+validates my plex setup:
   1: |
     apiVersion: apps/v1
     kind: Deployment
@@ -10,7 +10,7 @@ validates my home-assistant setup:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.11
+        helm.sh/chart: app-template-0.0.13
       name: RELEASE-NAME
     spec:
       replicas: 1
@@ -107,7 +107,7 @@ validates my home-assistant setup:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
         app.kubernetes.io/service: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.11
+        helm.sh/chart: app-template-0.0.13
       name: RELEASE-NAME
     spec:
       externalTrafficPolicy: Local
@@ -132,7 +132,7 @@ validates my home-assistant setup:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.11
+        helm.sh/chart: app-template-0.0.13
       name: RELEASE-NAME
     spec:
       ingressClassName: traefik
@@ -159,7 +159,7 @@ validates my home-assistant setup:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: RELEASE-NAME
-        helm.sh/chart: app-template-0.0.11
+        helm.sh/chart: app-template-0.0.13
       name: RELEASE-NAME
     spec:
       endpoints:
