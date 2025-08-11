@@ -95,7 +95,7 @@ service:
     {{- range $name, $port := .Values.newTemplate.udpPorts}}
       {{ $name }}:
         port: {{ $port }}
-        protocol: udp
+        protocol: UDP
     {{- end }}
 {{- end }}
 
