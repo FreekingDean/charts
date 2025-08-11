@@ -1,5 +1,5 @@
 tests:
-  - it: validates my home-assistant setup
+  - it: validates my plex setup
     set:
       stateful: true
       defaultPodOptions:

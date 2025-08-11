@@ -15,6 +15,9 @@ istio: true
 ports:
   http: 8080
 
+udpPorts: {}
+  #  server: 7777
+
 ingress:
   localonly: true
   enabled: true
@@ -34,7 +37,7 @@ persistence: {}
   #      - path: server.toml
 
 env: {}
-  #KEY: value
+  #  KEY: value
 
 newTemplate: {}
 
