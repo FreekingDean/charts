@@ -1,0 +1,23 @@
+tests:
+  - it: validates my satisfactory setup
+    set:
+      stateful: true
+      env:
+        DATA_PATH: /data
+      image:
+        repository: ghcr.io/wolveix/satisfactory-server
+        tag: latest
+      ports:
+        http: 7777
+        messaging: 8888
+      ingress:
+        enabled: true
+      serviceMonitor:
+        enabled: false
+      loadbalanced: true
+      persistence:
+        data:
+          type: persistentVolumeClaim
+          existingClaim: satisfactory-config
+    asserts:
+      - matchSnapshot: {}
