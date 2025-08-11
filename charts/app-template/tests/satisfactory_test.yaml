@@ -1,3 +1,5 @@
+templates:
+  - common.yaml
 tests:
   - it: validates my satisfactory setup
     set:
